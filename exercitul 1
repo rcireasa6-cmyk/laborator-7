@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 6 // Avem 5 noduri, folosim indexare de la 1 la 5
+
+int adj[MAX][MAX] = {0}; // Matricea de adiacență inițializată cu 0
+int visited[MAX];        // Vector pentru a marca nodurile vizitate
+
+// --- FUNCȚIE DFS (Depth-First Search) ---
+void DFS(int nod, int n) {
+    printf("%d ", nod);
+    visited[nod] = 1; // Marcăm nodul curent ca vizitat
+
+    for (int i = 1; i <= n; i++) {
+        // Dacă există muchie și nodul vecin nu a fost vizitat
+        if (adj[nod][i] == 1 && !visited[i]) {
+            DFS(i, n); // Mergem în adâncime
+        }
+    }
+}
+
+// --- FUNCȚIE BFS (Breadth-First Search) ---
+void BFS(int start, int n) {
+    int queue[MAX], front = 0, rear = 0;
+    int visited_bfs[MAX] = {0};
+
+    // Adăugăm punctul de start în coadă
+    queue[rear++] = start;
+    visited_bfs[start] = 1;
+
+    printf("Parcurgere BFS: ");
+    while (front < rear) {
+        int curent = queue[front++]; // Extragem din coadă
+        printf("%d ", curent);
+
+        for (int i = 1; i <= n; i++) {
+            // Verificăm vecinii nevizitați
+            if (adj[curent][i] == 1 && !visited_bfs[i]) {
+                queue[rear++] = i;    // Îi punem în coadă
+                visited_bfs[i] = 1;   // Îi marcăm ca vizitați
+            }
+        }
+    }
+    printf("\n");
+}
+
+int main() {
+    int n = 5; // Număr de noduri
+
+    // Construim graful (Matricea de adiacență)
+    adj[1][2] = adj[2][1] = 1;
+    adj[1][3] = adj[3][1] = 1;
+    adj[2][4] = adj[4][2] = 1;
+    adj[2][5] = adj[5][2] = 1;
+    adj[3][5] = adj[5][3] = 1;
+
+    // Afișăm Matricea de Adiacență
+    printf("Matricea de adiacenta:\n");
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            printf("%d ", adj[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+
+    // Executăm BFS
+    BFS(1, n);
+
+    // Executăm DFS (resetăm vectorul vizitat înainte)
+    for (int i = 1; i <= n; i++) visited[i] = 0;
+    printf("Parcurgere DFS: ");
+    DFS(1, n);
+    printf("\n");
+
+    return 0;
+}
