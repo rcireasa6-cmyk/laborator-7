@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+
+#define MAX 100
+
+void gasesteDistantaExtrema() {
+    // 1. Datele de test (Poti schimba valorile aici)
+    int n = 6; 
+    int valori[] = {10, 5, 20, 5, 30, 30}; // Nodurile 1 si 3 sunt MIN (5), 4 si 5 sunt MAX (30)
+    int adj[MAX][MAX] = {0};
+    int dist[MAX];
+
+    // 2. Definirea muchiilor (Graf neorientat)
+    // Conectam nodul 1 (Min) de 0, 0 de 2, si 2 de 4 (Max) -> Distanta ar trebui sa fie 3
+    adj[1][0] = adj[0][1] = 1; 
+    adj[0][2] = adj[2][0] = 1;
+    adj[2][4] = adj[4][2] = 1;
+    adj[3][5] = adj[5][3] = 1; // Alta componenta separata (5-30)
+
+    // 3. Identificarea minimului si maximului global
+    int min_val = INT_MAX, max_val = INT_MIN;
+    for (int i = 0; i < n; i++) {
+        if (valori[i] < min_val) min_val = valori[i];
+        if (valori[i] > max_val) max_val = valori[i];
+        dist[i] = -1; // -1 inseamna nevizitat
+    }
+
+    printf("Minimul gasit: %d | Maximul gasit: %d\n", min_val, max_val);
+
+    if (min_val == max_val) {
+        printf("Distanta: 0\n");
+        return;
+    }
+
+    // 4. BFS Multi-Sursa
+    int coada[MAX], front = 0, rear = 0;
+
+    // Punem toate nodurile MIN in coada de start
+    for (int i = 0; i < n; i++) {
+        if (valori[i] == min_val) {
+            coada[rear++] = i;
+            dist[i] = 0;
+        }
+    }
+
+    int rezultat = -1;
+    while (front < rear) {
+        int u = coada[front++];
+
+        // Daca am ajuns la orice nod care are valoarea maxima
+        if (valori[u] == max_val) {
+            rezultat = dist[u];
+            break;
+        }
+
+        for (int v = 0; v < n; v++) {
+            if (adj[u][v] == 1 && dist[v] == -1) {
+                dist[v] = dist[u] + 1;
+                coada[rear++] = v;
+            }
+        }
+    }
+
+    // 5. Afisarea rezultatului
+    if (rezultat != -1) {
+        printf("Cea mai scurta distanta intre un nod MIN si unul MAX este: %d\n", rezultat);
+    } else {
+        printf("Nu exista drum intre extreme.\n");
+    }
+}
+
+int main() {
+    gasesteDistantaExtrema();
+    return 0;
+}
