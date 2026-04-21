@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define MAX 100
+
+// Funcție recursivă DFS pentru detectarea ciclului
+bool areCicluRec(int graf[MAX][MAX], int n, int nod, bool vizitat[], int parinte) {
+    vizitat[nod] = true;
+
+    for (int i = 0; i < n; i++) {
+        // Dacă există muchie între nod și i
+        if (graf[nod][i] == 1) {
+            // Dacă vecinul nu a fost vizitat, continuăm DFS-ul
+            if (!vizitat[i]) {
+                if (areCicluRec(graf, n, i, vizitat, nod))
+                    return true;
+            }
+            // Dacă vecinul este vizitat și NU este părintele nodului curent -> CICLU
+            else if (i != parinte) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+// Funcție principală pentru verificarea întregului graf
+bool areCiclu(int graf[MAX][MAX], int n) {
+    bool vizitat[MAX] = {false};
+
+    // Verificăm fiecare componentă conexă (în caz că graful nu e legat)
+    for (int i = 0; i < n; i++) {
+        if (!vizitat[i]) {
+            if (areCicluRec(graf, n, i, vizitat, -1))
+                return true;
+        }
+    }
+    return false;
+}
+
+int main() {
+    int n = 4; // Noduri: 0, 1, 2, 3
+    int graf[MAX][MAX] = {0};
+
+    // Construim un graf cu ciclu: 0-1, 1-2, 2-0, 2-3
+    graf[0][1] = graf[1][0] = 1;
+    graf[1][2] = graf[2][1] = 1;
+    graf[2][0] = graf[0][2] = 1;
+    graf[2][3] = graf[3][2] = 1;
+
+    if (areCiclu(graf, n))
+        printf("Graful contine cel putin un ciclu.\n");
+    else
+        printf("Graful nu contine cicluri.\n");
+
+    return 0;
+}
