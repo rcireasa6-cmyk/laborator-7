@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define MAX 100
+
+// Funcția BFS pentru detectarea drumului
+bool existaDrum(int graf[MAX][MAX], int n, int start, int target) {
+    bool vizitat[MAX] = {false};
+    int coada[MAX];
+    int front = 0, rear = 0;
+
+    // Adăugăm nodul de start
+    coada[rear++] = start;
+    vizitat[start] = true;
+
+    while (front < rear) {
+        int nodCurent = coada[front++];
+
+        // Am găsit drumul
+        if (nodCurent == target) {
+            return true;
+        }
+
+        // Explorăm vecinii (doar pentru graf orientat: rândul nodCurent)
+        for (int i = 0; i < n; i++) {
+            if (graf[nodCurent][i] == 1 && !vizitat[i]) {
+                vizitat[i] = true;
+                coada[rear++] = i;
+            }
+        }
+    }
+
+    return false; // Nu s-a găsit nicio cale
+}
+
+int main() {
+    int n = 4; // Număr de noduri (0, 1, 2, 3)
+    int graf[MAX][MAX] = {0};
+
+    // Definim muchiile grafului orientat
+    // 0 -> 1, 1 -> 2, 2 -> 0, 2 -> 3
+    graf[0][1] = 1;
+    graf[1][2] = 1;
+    graf[2][0] = 1;
+    graf[2][3] = 1;
+
+    int sursa = 0, destinatie = 3;
+
+    if (existaDrum(graf, n, sursa, destinatie)) {
+        printf("Exista drum de la %d la %d\n", sursa, destinatie);
+    } else {
+        printf("NU exista drum de la %d la %d\n", sursa, destinatie);
+    }
+
+    return 0;
+}
